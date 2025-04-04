@@ -8,12 +8,10 @@ library(openxlsx)
 # Define file path
 #----------------------------------------#--
 #----------------------------------------#--
-    file_path <- "Book1.xlsx"
+    file_path <- "Filled_DATATABLE.xlsx"
 #----------------------------------------#--
 #----------------------------------------#--
 data <- as.data.frame(read_excel(file_path, sheet = 1, col_names = TRUE, .name_repair = "minimal"))
-# Read the CSV file
-#data <- read.csv(file_path, header = TRUE, sep = ";", stringsAsFactors = FALSE,check.names = FALSE)
 
 # Convert the first column to row names
 rownames(data) <- data[[1]]  # Assign first column as row names
@@ -192,12 +190,12 @@ analysis <- function(data)
   
   
   #  (1) Net Present Value (NPV)
-  # Checks  whether all required columns exist in data before proceeding with calculations
-  required_cols_npv <- c("Cash Flow(€/yr)", "Discount Rate (%/year)", "CAPEX (€)", "Subsidies ( €/yr)", "Life Exp. (years)")
+  #  Checks  whether all required columns exist in data before proceeding with calculations
+  required_cols_npv <- c("Cash inflow(€/yr)", "Discount Rate (%/year)", "CAPEX (€)", "Subsidies ( €/yr)", "Life Exp. (years)")
   
   if (all(required_cols_npv %in% colnames(data))) 
   {
-    cf <- data[,"Cash Flow(€/yr)"]
+    cf <- data[,"Cash inflow(€/yr)"]
     dr <- data[,"Discount Rate (%/year)"]
     capex <- data[,"CAPEX (€)"]
     subsidies <- data[, "Subsidies ( €/yr)"]
@@ -316,7 +314,7 @@ save_results_to_excel <- function(normalized_data, criteria_weights, sorted_weig
   {
     if (sheet_name %in% names(wb))
     {
-      removeWorksheet(wb, sheet_name)  # ✅ Remove old sheet if it exists
+      removeWorksheet(wb, sheet_name)  # Remove old sheet if it exists
     }
     addWorksheet(wb, sheet_name)
     writeData(wb, sheet_name, data, rowNames = FALSE)
@@ -345,10 +343,10 @@ save_results_to_excel <- function(normalized_data, criteria_weights, sorted_weig
   plot_file <- "Criteria_Weights_Plot.png"
   ggsave(plot_file, plot = plot, width = 35, height = 25, dpi = 300)
   #  Step 2: Add a Sheet for the Plot and Insert the Image
-  #  Step 2: **Remove "Plot" Sheet First** & Insert the Image
+  #  Step 3: **Remove "Plot" Sheet First** & Insert the Image
   if ("Plot" %in% names(wb))
   {
-    removeWorksheet(wb, "Plot")  # ✅ Ensure we remove the old sheet
+    removeWorksheet(wb, "Plot")  # Ensure we remove the old sheet
   }
   addWorksheet(wb, "Plot")
   insertImage(wb, "Plot", plot_file, width = 30, height = 20, startRow = 2, startCol = 2)
